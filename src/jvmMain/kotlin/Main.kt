@@ -17,7 +17,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
 @Composable
-fun App(socket: UserSocket) {
+fun App(socket: UserSocket, rsaEncryptor: RSAEncryptor) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     val lazyListState by remember { mutableStateOf(LazyListState()) }
     val messages = mutableListOf<String>()
@@ -32,6 +32,7 @@ fun App(socket: UserSocket) {
     MaterialTheme {
 
         Column(modifier = Modifier.fillMaxSize()) {
+            Text("User", modifier = Modifier.align(Alignment.CenterHorizontally))
             Button(onClick = {
                 if (textFieldValue.text.isBlank()) {
                     return@Button
@@ -42,7 +43,7 @@ fun App(socket: UserSocket) {
                 ))
                 messages.add(textFieldValue.text)
                 try {
-                    socket.sendMessage(textFieldValue.text)
+                    socket.sendMessage(rsaEncryptor.encryptMessage(textFieldValue.text, socket.publicKey!!))
                 }catch (e: Exception) {
                     println("Error ${e.message} ${e.cause}")
                 }
@@ -68,14 +69,13 @@ fun App(socket: UserSocket) {
             }
         }
     }
-
-
 }
 
 
 fun main() = application {
-    val socket = UserSocket(rememberCoroutineScope())
+    val rsa = RSAEncryptor()
+    val socket = UserSocket(rememberCoroutineScope(), rsa)
     Window(onCloseRequest = ::exitApplication, title = "Haxordak") {
-        App(socket)
+        App(socket, rsa)
     }
 }

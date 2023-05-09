@@ -2,29 +2,40 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
+import java.io.ObjectInputStream
 import java.net.Socket
-import kotlin.jvm.Throws
+import java.security.PrivateKey
+import java.security.PublicKey
 import kotlin.text.StringBuilder
 
-@Throws(IOException::class)
-internal fun startSocket() {
-    Thread {
-        val socket = Socket("127.0.0.1", 1112)
-    }.start()
-}
 
-class UserSocket(private val scope: CoroutineScope) {
+class UserSocket(private val scope: CoroutineScope, private val rsa: RSAEncryptor) {
 
     private lateinit var socket: Socket
     private val _state = MutableStateFlow(Message())
+    
+    var publicKey: PublicKey? = null
+    var privateKey: PrivateKey? = null
     val state = _state.asStateFlow()
+    
+    
 
     init {
         Thread {
-            socket = Socket("127.0.0.1", 1112)
-            receiveMessage()
+            try{
+                socket = Socket("127.0.0.1", 1112)
+                receiveKeys()
+                receiveMessage()
+            }catch (e: Exception) {
+                println("No host found")
+            }
         }.start()
+    }
+
+    private fun receiveKeys() {
+        val objectInputStream = ObjectInputStream(socket.getInputStream())
+        publicKey = objectInputStream.readObject() as PublicKey
+        privateKey = objectInputStream.readObject() as PrivateKey
     }
 
     private fun receiveMessage() {
@@ -34,14 +45,14 @@ class UserSocket(private val scope: CoroutineScope) {
             for (i in 1..length) {
                 strBuilder.append(socket.getInputStream().read().toChar())
             }
+            val decrypted = rsa.decryptMessage(strBuilder.toString(), privateKey!!)
             scope.launch {
                 _state.emit(
                     Message(
-                        message = strBuilder.toString(),
+                        message = decrypted,
                         messageType = MessageType.SERVER
                     )
                 )
-                println("received")
             }
         }
     }

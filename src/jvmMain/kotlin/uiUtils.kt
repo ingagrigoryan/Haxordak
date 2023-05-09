@@ -32,7 +32,7 @@ internal fun getText(text: String) {
                 .padding(8.dp),
             color = Color.White
         )
-        time(Modifier.align(Alignment.Bottom))
+        TimeContainer(Modifier.align(Alignment.Bottom))
     }
 }
 
@@ -40,7 +40,7 @@ internal fun getText(text: String) {
 internal fun getTextFrom(text: String) {
     Row(modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End) {
-        time(Modifier.align(Alignment.Bottom))
+        TimeContainer(Modifier.align(Alignment.Bottom))
         Text(
             text,
             Modifier
@@ -54,7 +54,7 @@ internal fun getTextFrom(text: String) {
 
 @OptIn(ExperimentalUnitApi::class)
 @Composable
-internal fun time(modifier: Modifier) {
+internal fun TimeContainer(modifier: Modifier) {
     val time = System.currentTimeMillis()
     val dateFormat = SimpleDateFormat("HH:mm")
     val formattedText = dateFormat.format(time)
