@@ -59,4 +59,5 @@ internal fun TimeContainer(modifier: Modifier) {
     val dateFormat = SimpleDateFormat("HH:mm")
     val formattedText = dateFormat.format(time)
     return Text(formattedText, modifier.padding(start = 4.dp, end = 4.dp), fontSize = TextUnit(12F, TextUnitType.Sp))
+
 }

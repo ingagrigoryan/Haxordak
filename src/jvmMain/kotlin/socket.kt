@@ -8,7 +8,6 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import kotlin.text.StringBuilder
 
-
 class UserSocket(private val scope: CoroutineScope, private val rsa: RSAEncryptor) {
 
     private lateinit var socket: Socket

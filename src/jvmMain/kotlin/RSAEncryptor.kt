@@ -3,7 +3,6 @@ import java.util.*
 import javax.crypto.Cipher
 
 class RSAEncryptor {
-
     @Throws(Exception::class)
     fun encryptMessage(plainText: String, publicKey: PublicKey): String {
         val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")

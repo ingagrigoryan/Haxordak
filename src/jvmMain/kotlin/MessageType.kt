@@ -1,4 +1,4 @@
 enum class MessageType {
     USER,
-    SERVER
+    SERVER,
 }
