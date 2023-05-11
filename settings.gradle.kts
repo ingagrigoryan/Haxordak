@@ -12,5 +12,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Haxordak"
+rootProject.name = "Haxordak" 
 
